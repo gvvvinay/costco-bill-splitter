@@ -1,0 +1,81 @@
+.participants-list {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.participants-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.participants-header h3 {
+  font-size: 18px;
+  color: #333;
+}
+
+.btn-add {
+  padding: 6px 12px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-add:hover {
+  background: #5568d3;
+}
+
+.participants-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 16px;
+  background: #f0f2ff;
+  color: #667eea;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.add-participant-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.add-participant-form input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.add-participant-form input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.add-participant-form button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .add-participant-form {
+    flex-direction: column;
+  }
+}

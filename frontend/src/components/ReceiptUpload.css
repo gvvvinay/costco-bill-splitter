@@ -1,0 +1,121 @@
+.receipt-upload {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.upload-card {
+  background: white;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.upload-card h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.upload-card > p {
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.upload-button {
+  display: block;
+  width: 100%;
+  padding: 20px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.upload-button:hover {
+  background: #5568d3;
+}
+
+.upload-button span {
+  display: block;
+}
+
+.divider {
+  width: 100%;
+  text-align: center;
+  color: #999;
+  position: relative;
+  margin: 8px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: #ddd;
+}
+
+.divider::before {
+  left: 0;
+}
+
+.divider::after {
+  right: 0;
+}
+
+.manual-entry {
+  margin-top: 20px;
+}
+
+.manual-entry textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: monospace;
+  resize: vertical;
+}
+
+.manual-entry textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.manual-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+  .upload-card {
+    padding: 24px;
+  }
+
+  .manual-actions {
+    flex-direction: column;
+  }
+
+  .manual-actions button {
+    width: 100%;
+  }
+}

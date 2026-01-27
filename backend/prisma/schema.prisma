@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  username    String   @unique
+  password    String?
+  googleId    String?  @unique
+  picture     String?
+  authProvider String  @default("local")
+  createdAt   DateTime @default(now())
+  sessions    BillSplitSession[]
+  globalParticipants GlobalParticipant[]
+}
+
+model BillSplitSession {
+  id          String   @id @default(uuid())
+  name        String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  receiptUrl  String?
+  totalAmount Float    @default(0)
+  taxAmount   Float    @default(0)
+  settled     Boolean  @default(false)
+  settledAt   DateTime?
+  archived    Boolean  @default(false)
+  archivedAt  DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  participants Participant[]
+  lineItems   LineItem[]
+  settlements Settlement[]
+}
+
+model Participant {
+  id                 String   @id @default(uuid())
+  name               String
+  sessionId          String
+  session            BillSplitSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  globalParticipantId String?
+  globalParticipant  GlobalParticipant? @relation(fields: [globalParticipantId], references: [id])
+  createdAt          DateTime @default(now())
+  assignments        ItemAssignment[]
+}
+
+model GlobalParticipant {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  participants Participant[]
+  
+  @@unique([userId, name])
+}
+
+model LineItem {
+  id          String   @id @default(uuid())
+  sessionId   String
+  session     BillSplitSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  name        String
+  quantity    Int      @default(1)
+  price       Float
+  taxable     Boolean  @default(true)
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  assignments ItemAssignment[]
+}
+
+model ItemAssignment {
+  id            String   @id @default(uuid())
+  lineItemId    String
+  lineItem      LineItem @relation(fields: [lineItemId], references: [id], onDelete: Cascade)
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  
+  @@unique([lineItemId, participantId])
+}
+
+model Settlement {
+  id              String   @id @default(uuid())
+  sessionId       String
+  session         BillSplitSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  participantId   String
+  participantName String
+  amountOwed      Float
+  amountPaid      Float    @default(0)
+  settled         Boolean  @default(false)
+  settledAt       DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([sessionId, participantId])
+}
