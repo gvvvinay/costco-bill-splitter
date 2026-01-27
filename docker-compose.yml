@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: costco-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - JWT_SECRET=your-secret-key-change-in-production
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - FRONTEND_URL=http://localhost:3000
+    volumes:
+      - backend-data:/app/prisma
+      - backend-uploads:/app/uploads
+    networks:
+      - costco-network
+    command: sh -c "npx prisma db push && npm start"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: costco-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=/api
+      - VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - VITE_GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+    depends_on:
+      - backend
+    networks:
+      - costco-network
+
+volumes:
+  backend-data:
+  backend-uploads:
+
+networks:
+  costco-network:
+    driver: bridge
