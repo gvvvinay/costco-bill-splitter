@@ -2,12 +2,10 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022"],
-    "types": ["node"],
     "moduleResolution": "node",
     "rootDir": "./src",
     "outDir": "./dist",
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
