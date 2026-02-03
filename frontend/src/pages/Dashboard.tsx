@@ -24,37 +24,42 @@ export default function Dashboard() {
   const loadSessions = async () => {
     try {
       const data = await api.getSessions();
+      if (!data || !Array.isArray(data)) {
+        setSessions([]);
+        return;
+      }
       // Convert to BillSplitSession format
       const converted = data.map((s: any) => ({
         ...s,
-        id: String(s.id),
-        userId: String(s.userId),
-        totalAmount: (s.items || []).reduce((sum: number, i: any) => sum + i.price, 0),
+        id: String(s?.id || Date.now()),
+        userId: String(s?.userId || ''),
+        totalAmount: (s?.items || []).reduce((sum: number, i: any) => sum + (i?.price || 0), 0),
         taxAmount: 0,
         archived: false,
-        lineItems: (s.items || []).map((item: any) => ({
+        lineItems: (s?.items || []).map((item: any) => ({
           ...item,
-          id: String(item.id),
-          sessionId: String(s.id),
+          id: String(item?.id || Date.now()),
+          sessionId: String(s?.id || ''),
           taxable: false,
           orderIndex: 0,
-          assignments: (item.participantIds || []).map((pid: number) => ({
+          assignments: (item?.participantIds || []).map((pid: number) => ({
             id: String(Date.now() + Math.random()),
-            lineItemId: String(item.id),
+            lineItemId: String(item?.id || ''),
             participantId: String(pid),
-            participant: s.participants?.find((p: any) => p.id === pid)
-          }))
+            participant: (s?.participants || []).find((p: any) => p?.id === pid)
+          })).filter(Boolean)
         })),
-        participants: (s.participants || []).map((p: any) => ({
+        participants: (s?.participants || []).map((p: any) => ({
           ...p,
-          id: String(p.id),
-          sessionId: String(s.id)
+          id: String(p?.id || Date.now()),
+          sessionId: String(s?.id || '')
         })),
-        updatedAt: s.createdAt
+        updatedAt: s?.createdAt || new Date().toISOString()
       }));
       setSessions(converted);
     } catch (error) {
       console.error('Failed to load sessions:', error);
+      setSessions([]);
     } finally {
       setLoading(false);
     }

@@ -42,37 +42,54 @@ export default function SessionView() {
   };
 
   const calculateSplits = (sessionData: any): SplitCalculation => {
-    const participants = sessionData.participants || [];
-    const items = sessionData.items || [];
+    if (!sessionData) {
+      return {
+        participants: [],
+        summary: { subtotal: 0, tax: 0, total: 0, roundingError: 0 }
+      };
+    }
+    
+    const participants = Array.isArray(sessionData.participants) ? sessionData.participants : [];
+    const items = Array.isArray(sessionData.items) ? sessionData.items : [];
     
     const participantTotals: Record<number, number> = {};
     
     participants.forEach((p: any) => {
-      participantTotals[p.id] = 0;
+      if (p?.id) {
+        participantTotals[p.id] = 0;
+      }
     });
     
     items.forEach((item: any) => {
-      const shareCount = item.participantIds?.length || 1;
+      if (!item?.price) return;
+      const participantIds = Array.isArray(item.participantIds) ? item.participantIds : [];
+      const shareCount = participantIds.length || 1;
       const shareAmount = item.price / shareCount;
-      item.participantIds?.forEach((pid: number) => {
+      participantIds.forEach((pid: number) => {
         participantTotals[pid] = (participantTotals[pid] || 0) + shareAmount;
       });
     });
     
-    const total = items.reduce((sum: number, i: any) => sum + i.price, 0);
+    const total = items.reduce((sum: number, i: any) => sum + (i?.price || 0), 0);
     
     const participantsList: ParticipantTotal[] = participants.map((p: any) => ({
-      participantId: String(p.id),
-      name: p.name,
-      subtotal: participantTotals[p.id] || 0,
+      participantId: String(p?.id || ''),
+      name: p?.name || 'Unknown',
+      subtotal: participantTotals[p?.id] || 0,
       taxAmount: 0,
-      total: participantTotals[p.id] || 0,
-      items: items.filter((i: any) => i.participantIds?.includes(p.id)).map((i: any) => ({
-        name: i.name,
-        price: i.price,
-        splitCount: i.participantIds?.length || 1,
-        share: i.price / (i.participantIds?.length || 1)
-      }))
+      total: participantTotals[p?.id] || 0,
+      items: items.filter((i: any) => {
+        const pids = Array.isArray(i?.participantIds) ? i.participantIds : [];
+        return pids.includes(p?.id);
+      }).map((i: any) => {
+        const pids = Array.isArray(i?.participantIds) ? i.participantIds : [];
+        return {
+          name: i?.name || '',
+          price: i?.price || 0,
+          splitCount: pids.length || 1,
+          share: (i?.price || 0) / (pids.length || 1)
+        };
+      })
     }));
     
     return {

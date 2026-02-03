@@ -22,7 +22,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
 
   const filteredItems = items.filter(item => {
     if (filter === 'unassigned') {
-      return item.assignments.length === 0;
+      return !item.assignments || item.assignments.length === 0;
     }
     return true;
   });
@@ -31,7 +31,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
     const item = items.find(i => i.id === itemId);
     if (!item) return;
 
-    const currentAssignments = item.assignments.map(a => Number(a.participantId));
+    const currentAssignments = (item.assignments || []).map(a => Number(a.participantId));
     const newAssignments = isAssigned
       ? currentAssignments.filter(id => id !== Number(participantId))
       : [...currentAssignments, Number(participantId)];
@@ -157,7 +157,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
             className={`filter-btn ${filter === 'unassigned' ? 'active' : ''}`}
             onClick={() => setFilter('unassigned')}
           >
-            Not Assigned ({items.filter(i => i.assignments.length === 0).length})
+            Not Assigned ({items.filter(i => !i.assignments || i.assignments.length === 0).length})
           </button>
         </div>
         <button
@@ -208,7 +208,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
 
       <div className="items-grid">
         {filteredItems.map(item => {
-          const assignedIds = item.assignments.map(a => a.participantId);
+          const assignedIds = (item.assignments || []).map(a => a.participantId);
 
           return (
             <div key={item.id} className="item-card">
