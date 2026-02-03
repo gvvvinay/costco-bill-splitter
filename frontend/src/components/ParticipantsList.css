@@ -1,81 +1,95 @@
 .participants-list {
   background: white;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
 }
 
 .participants-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 1.25rem;
 }
 
 .participants-header h3 {
-  font-size: 18px;
-  color: #333;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--gray-900);
 }
 
 .btn-add {
-  padding: 6px 12px;
-  background: #667eea;
+  padding: 0.5rem 1rem;
+  background: var(--primary-500);
   color: white;
   border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  transition: background 0.2s;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .btn-add:hover {
-  background: #5568d3;
+  background: var(--primary-600);
+  transform: translateY(-1px);
 }
 
 .participants-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .chip {
-  padding: 8px 16px;
-  background: #f0f2ff;
-  color: #667eea;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: var(--primary-50);
+  color: var(--primary-700);
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid var(--primary-200);
 }
 
 .add-participant-form {
   display: flex;
-  gap: 8px;
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #e0e0e0;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gray-200);
 }
 
 .add-participant-form input {
   flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 0.625rem 1rem;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  transition: all 0.2s;
 }
 
 .add-participant-form input:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
 }
 
 .add-participant-form button {
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .add-participant-form {
     flex-direction: column;
+  }
+  
+  .add-participant-form button {
+    width: 100%;
   }
 }

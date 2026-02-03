@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Costco Bill Splitter for deployment..."
+echo "🚀 Setting up SplitFair for deployment..."
 
 # Install dependencies
 echo "📦 Installing backend dependencies..."

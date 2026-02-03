@@ -1,5 +1,5 @@
 {
-  "name": "costco-bill-splitter",
+  "name": "splitfair",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -16,5 +16,10 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.2",
+    "@capacitor/cli": "^8.0.2",
+    "@capacitor/core": "^8.0.2"
   }
 }

@@ -16,25 +16,38 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
+    // Validate username format
+    if (username.length < 3 || username.length > 20) {
+      return res.status(400).json({ error: 'Username must be 3-20 characters' });
+    }
+
+    if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+      return res.status(400).json({ error: 'Username can only contain letters, numbers, hyphens, and underscores' });
+    }
+
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
-          { email },
-          { username }
+          { email: email.toLowerCase() },
+          { username: username.toLowerCase() }
         ]
       }
     });
 
     if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+      if (existingUser.email === email.toLowerCase()) {
+        return res.status(400).json({ error: 'Email already registered' });
+      } else {
+        return res.status(400).json({ error: 'Username already taken' });
+      }
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.create({
       data: {
-        email,
-        username,
+        email: email.toLowerCase(),
+        username: username.toLowerCase(),
         password: hashedPassword
       }
     });
@@ -67,8 +80,8 @@ router.post('/login', async (req, res) => {
     const user = await prisma.user.findFirst({
       where: {
         OR: [
-          { email: username },
-          { username }
+          { email: username.toLowerCase() },
+          { username: username.toLowerCase() }
         ]
       }
     });
@@ -77,13 +90,15 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password || '');
 
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+
+    console.log(`✅ User logged in: ${user.username}`);
 
     res.json({
       token,

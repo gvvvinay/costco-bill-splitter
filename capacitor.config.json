@@ -1,0 +1,8 @@
+{
+  "appId": "com.splitfair.billsplitter2026",
+  "appName": "SplitFair",
+  "webDir": "frontend/dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

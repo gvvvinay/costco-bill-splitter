@@ -1,27 +1,31 @@
 .receipt-upload {
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  padding: 2.5rem 0;
 }
 
 .upload-card {
   background: white;
-  border-radius: 12px;
-  padding: 40px;
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
   width: 100%;
   max-width: 600px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
 }
 
 .upload-card h2 {
-  font-size: 24px;
-  margin-bottom: 8px;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--gray-900);
 }
 
 .upload-card > p {
-  color: #666;
-  margin-bottom: 24px;
+  color: var(--gray-600);
+  margin-bottom: 2rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
 }
 
 .upload-section {
@@ -32,34 +36,46 @@
 }
 
 .upload-button {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   width: 100%;
-  padding: 20px;
-  background: #667eea;
+  padding: var(--space-lg) var(--space-md);
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 18px;
-  font-weight: 500;
+  border-radius: var(--radius-lg);
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-family-base);
   text-align: center;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
 }
 
 .upload-button:hover {
-  background: #5568d3;
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .upload-button span {
   display: block;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  margin-top: var(--space-xs);
 }
 
 .divider {
   width: 100%;
   text-align: center;
-  color: #999;
+  color: var(--color-text-secondary);
   position: relative;
-  margin: 8px 0;
+  margin: var(--space-lg) 0;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
 }
 
 .divider::before,
@@ -69,7 +85,7 @@
   top: 50%;
   width: 40%;
   height: 1px;
-  background: #ddd;
+  background: var(--color-border-light);
 }
 
 .divider::before {
@@ -81,38 +97,80 @@
 }
 
 .manual-entry {
-  margin-top: 20px;
+  margin-top: var(--space-lg);
 }
 
 .manual-entry textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: monospace;
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-family: var(--font-family-mono);
   resize: vertical;
+  min-height: 120px;
+  line-height: 1.5;
+  background: var(--color-bg-elevated);
+  transition: all 0.2s ease;
 }
 
 .manual-entry textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px var(--primary-100);
+  background: white;
 }
 
 .manual-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--space-sm);
   justify-content: flex-end;
-  margin-top: 16px;
+  margin-top: var(--space-md);
 }
 
-@media (max-width: 768px) {
+.hidden {
+  display: none !important;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.upload-button.secondary {
+  background: white;
+  color: var(--primary-600);
+  border: 1px solid var(--primary-200);
+}
+
+.upload-button.secondary:hover {
+  background: var(--primary-50);
+  border-color: var(--primary-300);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.upload-button.secondary span {
+  color: var(--primary-600);
+}
+
+@media (max-width: 640px) {
+  .receipt-upload {
+    padding: var(--space-md) 0;
+  }
+  
   .upload-card {
-    padding: 24px;
+    padding: var(--space-lg);
+    margin: 0 var(--space-sm);
+  }
+
+  .upload-button {
+    padding: var(--space-md);
+    font-size: 1rem;
   }
 
   .manual-actions {
     flex-direction: column;
+    gap: var(--space-xs);
   }
 
   .manual-actions button {

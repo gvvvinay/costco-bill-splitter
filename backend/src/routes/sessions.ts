@@ -76,10 +76,24 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Session name is required' });
     }
 
+    // Get the current user to auto-add them as first participant
+    const currentUser = await prisma.user.findUnique({
+      where: { id: req.userId }
+    });
+
+    if (!currentUser) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
     const session = await prisma.billSplitSession.create({
       data: {
         name,
-        userId: req.userId!
+        userId: req.userId!,
+        participants: {
+          create: {
+            name: currentUser.username
+          }
+        }
       },
       include: {
         participants: true,

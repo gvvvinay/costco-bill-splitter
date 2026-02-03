@@ -88,6 +88,13 @@ export default function Dashboard() {
     }
   };
 
+  const getSessionTotal = (session: BillSplitSession) => {
+    // Calculate total dynamically from line items + tax to ensure accuracy
+    // even if the stored totalAmount is out of sync
+    const itemsTotal = session.lineItems?.reduce((sum, item) => sum + item.price, 0) || 0;
+    return itemsTotal + (session.taxAmount || 0);
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -96,7 +103,7 @@ export default function Dashboard() {
     <div className="dashboard">
       <header className="dashboard-header">
         <div className="header-content">
-          <h1>Costco Bill Splitter</h1>
+          <h1>SplitFair</h1>
           <div className="user-menu">
             <span>Welcome, {user?.username}!</span>
             <button onClick={logout} className="btn-secondary">Sign Out</button>
@@ -109,22 +116,34 @@ export default function Dashboard() {
           <h2>Your Bill Splits</h2>
           <div className="header-actions">
             <button 
+              onClick={() => navigate('/users')} 
+              className="btn-secondary"
+            >
+              👥 Users
+            </button>
+            <button 
               onClick={() => navigate('/settlements')} 
               className="btn-secondary"
             >
-              💰 Settlement Summary
+              💰 Settlements
             </button>
             <button 
-              onClick={() => setShowExport(true)} 
+              onClick={() => navigate('/activity')} 
               className="btn-secondary"
             >
-              📊 Export CSV
+              🕒 Activity Log
+            </button>
+            <button 
+              onClick={() => setShowExport(true)}  
+              className="btn-secondary"
+            >
+              📊 Export
             </button>
             <button 
               onClick={() => setShowNewSession(true)} 
               className="btn-primary"
             >
-              + New Split
+              ✚ New Split
             </button>
           </div>
         </div>
@@ -133,15 +152,18 @@ export default function Dashboard() {
           <div className="modal-overlay" onClick={() => setShowNewSession(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h3>Create New Bill Split</h3>
+              <p style={{ marginBottom: '1.5rem', color: 'var(--gray-600)', fontSize: '0.9375rem' }}>
+                Give this trip a memorable name to help track your shared expenses
+              </p>
               <form onSubmit={createSession}>
                 <div className="form-group">
-                  <label htmlFor="sessionName">Session Name</label>
+                  <label htmlFor="sessionName">Trip Name</label>
                   <input
                     id="sessionName"
                     type="text"
                     value={newSessionName}
                     onChange={(e) => setNewSessionName(e.target.value)}
-                    placeholder="e.g., Weekend Costco Run"
+                    placeholder="e.g., Weekend Grocery Run, July 4th Party Supplies"
                     autoFocus
                     required
                   />
@@ -151,7 +173,7 @@ export default function Dashboard() {
                     Cancel
                   </button>
                   <button type="submit" className="btn-primary">
-                    Create
+                    Create Trip
                   </button>
                 </div>
               </form>
@@ -163,9 +185,12 @@ export default function Dashboard() {
           <div className="modal-overlay" onClick={() => setShowExport(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h3>Export to CSV</h3>
+              <p style={{ marginBottom: '1.5rem', color: 'var(--gray-600)', fontSize: '0.9375rem' }}>
+                Download your bill splits for record keeping or analysis
+              </p>
               <form onSubmit={(e) => { e.preventDefault(); handleExport(); }}>
                 <div className="form-group">
-                  <label htmlFor="startDate">Start Date (Optional)</label>
+                  <label htmlFor="startDate">From Date (Optional)</label>
                   <input
                     id="startDate"
                     type="date"
@@ -174,7 +199,7 @@ export default function Dashboard() {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="endDate">End Date (Optional)</label>
+                  <label htmlFor="endDate">To Date (Optional)</label>
                   <input
                     id="endDate"
                     type="date"
@@ -200,19 +225,19 @@ export default function Dashboard() {
             className={`filter-btn ${!showArchived ? 'active' : ''}`}
             onClick={() => setShowArchived(false)}
           >
-            Active Sessions
+            Active Trips
           </button>
           <button 
             className={`filter-btn ${showArchived ? 'active' : ''}`}
             onClick={() => setShowArchived(true)}
           >
-            Archived Sessions
+            Archived
           </button>
         </div>
 
         {sessions.filter(s => showArchived ? s.archived : !s.archived).length === 0 ? (
           <div className="empty-state">
-            <p>{showArchived ? 'No archived sessions.' : 'No active bill splits yet. Create one to get started!'}</p>
+            <p>{showArchived ? 'No archived splits yet.' : 'No bill splits yet. Click "New Split" to get started!'}</p>
           </div>
         ) : (
           <div className="sessions-grid">
@@ -226,11 +251,11 @@ export default function Dashboard() {
                   <div className="session-info">
                     <p className="session-date">{formatDate(session.createdAt)}</p>
                     <p className="session-total">
-                      Total: ${session.totalAmount.toFixed(2)}
+                      ${getSessionTotal(session).toFixed(2)}
                     </p>
                     <p className="session-meta">
-                      {session.participants.length} participant{session.participants.length !== 1 ? 's' : ''} • 
-                      {' '}{session.lineItems.length} item{session.lineItems.length !== 1 ? 's' : ''}
+                      {session.participants.length} {session.participants.length === 1 ? 'person' : 'people'} • 
+                      {' '}{session.lineItems.length} {session.lineItems.length === 1 ? 'item' : 'items'}
                     </p>
                   </div>
                 </div>
@@ -240,7 +265,7 @@ export default function Dashboard() {
                     className="btn-archive"
                     title={session.archived ? 'Unarchive' : 'Archive'}
                   >
-                    {session.archived ? '📤 Unarchive' : '📦 Archive'}
+                    {session.archived ? '📤 Restore' : '📦 Archive'}
                   </button>
                 </div>
               </div>

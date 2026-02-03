@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">splitfair</string>
+    <string name="title_activity_main">splitfair</string>
+    <string name="package_name">com.splitfair.app</string>
+    <string name="custom_url_scheme">com.splitfair.app</string>
+</resources>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../lib/api';
 import { Participant } from '../types';
 import './ParticipantsList.css';
@@ -9,19 +9,50 @@ interface Props {
   onParticipantAdded: () => void;
 }
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+}
+
 export default function ParticipantsList({ participants, sessionId, onParticipantAdded }: Props) {
   const [showAdd, setShowAdd] = useState(false);
-  const [newName, setNewName] = useState('');
+  const [selectedUser, setSelectedUser] = useState('');
   const [adding, setAdding] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  useEffect(() => {
+    if (showAdd) {
+      loadUsers();
+    }
+  }, [showAdd]);
+
+  const loadUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const response = await api.get('/users');
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Failed to load users:', error);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Get users that aren't already participants
+  const availableUsers = users.filter(
+    user => !participants.some(p => p.name.toLowerCase() === user.username.toLowerCase())
+  );
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!selectedUser.trim()) return;
 
     setAdding(true);
     try {
-      await api.post(`/sessions/${sessionId}/participants`, { name: newName });
-      setNewName('');
+      await api.post(`/sessions/${sessionId}/participants`, { name: selectedUser });
+      setSelectedUser('');
       setShowAdd(false);
       onParticipantAdded();
     } catch (error) {
@@ -34,9 +65,9 @@ export default function ParticipantsList({ participants, sessionId, onParticipan
   return (
     <div className="participants-list">
       <div className="participants-header">
-        <h3>Participants ({participants.length})</h3>
+        <h3>Who's splitting? ({participants.length})</h3>
         <button onClick={() => setShowAdd(!showAdd)} className="btn-add">
-          + Add
+          ✚ Add Person
         </button>
       </div>
 
@@ -50,15 +81,23 @@ export default function ParticipantsList({ participants, sessionId, onParticipan
 
       {showAdd && (
         <form onSubmit={handleAdd} className="add-participant-form">
-          <input
-            type="text"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-            placeholder="Participant name"
-            autoFocus
+          <select
+            value={selectedUser}
+            onChange={(e) => setSelectedUser(e.target.value)}
+            disabled={loadingUsers || availableUsers.length === 0}
             required
-          />
-          <button type="submit" disabled={adding} className="btn-primary">
+            autoFocus
+          >
+            <option value="">
+              {loadingUsers ? 'Loading users...' : availableUsers.length === 0 ? 'No more users to add' : 'Select a user'}
+            </option>
+            {availableUsers.map(user => (
+              <option key={user.id} value={user.username}>
+                @{user.username}
+              </option>
+            ))}
+          </select>
+          <button type="submit" disabled={adding || !selectedUser} className="btn-primary">
             Add
           </button>
           <button type="button" onClick={() => setShowAdd(false)} className="btn-secondary">

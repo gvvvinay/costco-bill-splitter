@@ -38,19 +38,35 @@ export default function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>Costco Bill Splitter</h1>
-        <h2>Sign In</h2>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style={{ width: '80px', height: '80px', margin: '0 auto', display: 'block' }}>
+            <circle cx="100" cy="100" r="95" fill="#f0f4f8" stroke="#2563eb" strokeWidth="2"/>
+            <circle cx="70" cy="100" r="35" fill="#10b981" stroke="#059669" strokeWidth="2"/>
+            <text x="70" y="108" fontSize="24" fontWeight="bold" textAnchor="middle" fill="white">$</text>
+            <circle cx="130" cy="100" r="35" fill="#3b82f6" stroke="#1d4ed8" strokeWidth="2"/>
+            <text x="130" y="108" fontSize="24" fontWeight="bold" textAnchor="middle" fill="white">$</text>
+            <line x1="100" y1="85" x2="100" y2="115" stroke="#2563eb" strokeWidth="3" strokeLinecap="round"/>
+            <circle cx="100" cy="100" r="8" fill="#2563eb"/>
+          </svg>
+        </div>
+        <h1>SplitFair</h1>
+        <p className="auth-subtitle">
+          Split bills transparently and fairly with friends and family
+        </p>
+        
+        <h2>Sign in to continue</h2>
         
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Username or Email</label>
+            <label htmlFor="username">Email or Username</label>
             <input
               id="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your email or username"
               required
               autoFocus
             />
@@ -63,6 +79,7 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
               required
             />
           </div>
@@ -73,7 +90,7 @@ export default function Login() {
         </form>
 
         <div className="divider">
-          <span>OR</span>
+          <span>or</span>
         </div>
 
         <div className="google-login-wrapper">
@@ -90,12 +107,12 @@ export default function Login() {
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
               <path fill="none" d="M0 0h48v48H0z"/>
             </svg>
-            Sign in with Google
+            Continue with Google
           </button>
         </div>
 
         <p className="auth-footer">
-          Don't have an account? <Link to="/register">Sign up</Link>
+          Don't have an account? <Link to="/register">Create account</Link>
         </p>
       </div>
     </div>

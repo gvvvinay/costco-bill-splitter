@@ -1,0 +1,18 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#f0f4f8" stroke="#2563eb" stroke-width="2"/>
+  
+  <!-- Left coin -->
+  <circle cx="70" cy="100" r="35" fill="#10b981" stroke="#059669" stroke-width="2"/>
+  <text x="70" y="108" font-size="24" font-weight="bold" text-anchor="middle" fill="white">$</text>
+  
+  <!-- Right coin -->
+  <circle cx="130" cy="100" r="35" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="130" y="108" font-size="24" font-weight="bold" text-anchor="middle" fill="white">$</text>
+  
+  <!-- Split line in middle (equals sign style) -->
+  <line x1="100" y1="85" x2="100" y2="115" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Fair balance indicator -->
+  <circle cx="100" cy="100" r="8" fill="#2563eb"/>
+</svg>

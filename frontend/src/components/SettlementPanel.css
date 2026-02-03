@@ -1,79 +1,93 @@
 .settlement-panel {
   background: white;
-  border-radius: 8px;
-  padding: 24px;
-  margin-top: 24px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-top: var(--space-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
 }
 
 .settlement-panel h3 {
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 .settlement-info {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
+  color: var(--gray-600);
+  font-size: 0.9375rem;
+  margin-bottom: var(--space-lg);
+  line-height: 1.5;
 }
 
 .settlement-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
 }
 
 .settlement-item {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 16px;
-  transition: all 0.2s;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  transition: all 0.2s ease;
+  background: var(--color-bg-card);
 }
 
 .settlement-item:hover {
-  border-color: #667eea;
-  background: #f8f9ff;
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .settlement-checkbox {
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 12px;
+  gap: var(--space-md);
+  width: 100%;
 }
 
 .settlement-checkbox input[type="checkbox"] {
   position: absolute;
   opacity: 0;
   cursor: pointer;
+  width: 0;
+  height: 0;
 }
 
 .checkmark {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #ddd;
-  border-radius: 6px;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--gray-300);
+  border-radius: var(--radius-md);
   position: relative;
   flex-shrink: 0;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .settlement-checkbox input:checked ~ .checkmark {
-  background: #667eea;
-  border-color: #667eea;
+  background: var(--primary-500);
+  border-color: var(--primary-500);
 }
 
 .settlement-checkbox input:checked ~ .checkmark::after {
-  content: '✓';
+  content: '\2713';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .settlement-details {
@@ -81,22 +95,49 @@
   justify-content: space-between;
   align-items: center;
   flex: 1;
+  width: 100%;
 }
 
 .participant-name {
-  font-size: 16px;
-  color: #333;
-  font-weight: 500;
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
 }
 
 .participant-amount {
-  font-size: 18px;
-  color: #667eea;
-  font-weight: 600;
+  font-size: 1.125rem;
+  color: var(--primary-600);
+  font-weight: 700;
+  font-family: var(--font-family-mono);
+}
+
+.settlement-checkbox input:checked ~ .settlement-details .participant-name,
+.settlement-checkbox input:checked ~ .settlement-details .participant-amount {
+  color: var(--gray-400);
+  text-decoration: line-through; 
 }
 
 .settle-button {
   width: 100%;
-  padding: 14px;
-  font-size: 16px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 640px) {
+  .settlement-panel {
+    padding: var(--space-lg);
+  }
+  
+  .settlement-item {
+    padding: var(--space-sm);
+  }
+  
+  .participant-amount {
+    font-size: 1rem;
+  }
 }

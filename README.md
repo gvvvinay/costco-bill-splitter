@@ -1,6 +1,6 @@
-# Costco Bill Splitter
+# SplitFair
 
-A full-stack web application for splitting Costco receipts between friends. Upload a receipt photo, add participants, assign items, and automatically calculate who owes what.
+A full-stack web application for splitting bills transparently between friends. Upload a receipt photo, add participants, assign items, and automatically calculate who owes what.
 
 ## Features
 

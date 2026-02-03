@@ -44,23 +44,23 @@ router.post('/google/callback', async (req, res) => {
       });
       return res.status(400).json({ 
         error: 'Failed to exchange authorization code', 
-        details: tokenData.error_description || tokenData.error 
+        details: (tokenData as any).error_description || (tokenData as any).error 
       });
     }
 
     // Get user info from Google
     const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
-      headers: { Authorization: `Bearer ${tokenData.access_token}` }
+      headers: { Authorization: `Bearer ${(tokenData as any).access_token}` }
     });
 
-    const googleUser = await userInfoResponse.json();
+    const googleUser = await userInfoResponse.json() as any;
 
     if (!userInfoResponse.ok) {
       console.error('Failed to get user info:', googleUser);
       return res.status(400).json({ error: 'Failed to get user information' });
     }
 
-    const { id: googleId, email, name, picture } = googleUser;
+    const { id: googleId, email, name, picture } = googleUser as { id: string; email: string; name: string; picture: string };
 
     if (!email) {
       return res.status(400).json({ error: 'Email not provided by Google' });

@@ -1,12 +1,13 @@
 .session-view {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--gray-50);
 }
 
 .session-header {
   background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 16px 20px;
+  box-shadow: var(--shadow-sm);
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
 }
 
 .session-header .header-content {
@@ -14,104 +15,170 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .back-button {
-  padding: 8px 16px;
+  padding: 0.625rem 1rem;
   background: white;
-  color: #667eea;
-  border: 1px solid #667eea;
-  border-radius: 6px;
-  font-size: 14px;
+  color: var(--primary-600);
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
   transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .back-button:hover {
-  background: #f0f2ff;
+  background: var(--primary-50);
+  border-color: var(--primary-400);
 }
 
 .session-header h1 {
-  font-size: 24px;
-  color: #333;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.025em;
 }
 
 .session-main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px 20px;
+  padding: 2rem 1.5rem;
 }
 
 .receipt-preview {
   background: white;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--gray-200);
 }
 
 .receipt-preview h3 {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 0.75rem;
 }
 
 .receipt-link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: #667eea;
+  gap: 0.5rem;
+  color: var(--primary-600);
   text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border: 1px solid #667eea;
-  border-radius: 6px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  padding: 0.625rem 1.25rem;
+  border: 1.5px solid var(--primary-300);
+  border-radius: var(--radius-md);
   transition: all 0.2s;
+  background: var(--primary-50);
 }
 
 .receipt-link:hover {
-  background: #f0f2ff;
+  background: var(--primary-100);
+  border-color: var(--primary-400);
   transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.receipt-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.receipt-download-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--success-600);
+  background: var(--success-50);
+  border: 1.5px solid var(--success-300);
+  border-radius: var(--radius-md);
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.receipt-download-button:hover {
+  background: var(--success-100);
+  border-color: var(--success-400);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.receipt-download-button:active {
+  transform: translateY(0);
 }
 
 .error {
   text-align: center;
-  padding: 60px 20px;
-  color: #c33;
-  font-size: 18px;
+  padding: 4rem 1.5rem;
+  color: var(--error-600);
+  font-size: 1.125rem;
+  font-weight: 600;
 }
 
 .tabs {
   display: flex;
-  gap: 8px;
-  margin: 24px 0 16px;
-  border-bottom: 2px solid #e0e0e0;
+  gap: 0;
+  margin: 2rem 0 1.5rem;
+  border-bottom: 2px solid var(--gray-200);
+  background: white;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 0 1.5rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .tab {
-  padding: 12px 24px;
+  padding: 1rem 1.5rem;
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #666;
-  font-size: 16px;
-  font-weight: 500;
+  color: var(--gray-600);
+  font-size: 1rem;
+  font-weight: 600;
   transition: all 0.2s;
   margin-bottom: -2px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  position: relative;
 }
 
 .tab:hover {
-  color: #667eea;
+  color: var(--primary-600);
+  background: var(--primary-50);
 }
 
 .tab.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: var(--primary-600);
+  border-bottom-color: var(--primary-600);
+  background: var(--primary-50);
 }
 
 @media (max-width: 768px) {
   .session-header .header-content {
     flex-wrap: wrap;
+  }
+  
+  .session-main {
+    padding: 1.5rem 1rem;
+  }
+  
+  .tabs {
+    padding: 0 1rem;
+  }
+  
+  .tab {
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
   }
 }

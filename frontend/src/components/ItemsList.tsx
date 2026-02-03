@@ -141,7 +141,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
     return (
       <div className="items-list">
         <div className="empty-message">
-          Add participants above to start assigning items
+          <p>👥 Add people above to start splitting items</p>
         </div>
       </div>
     );
@@ -150,18 +150,19 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
   return (
     <div className="items-list">
       <div className="items-header">
+        <h3>Receipt Items</h3>
         <div className="filter-buttons">
           <button
             className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
             onClick={() => setFilter('all')}
           >
-            All Items ({items.length})
+            All ({items.length})
           </button>
           <button
             className={`filter-btn ${filter === 'unassigned' ? 'active' : ''}`}
             onClick={() => setFilter('unassigned')}
           >
-            Unassigned ({items.filter(i => i.assignments.length === 0).length})
+            Not Assigned ({items.filter(i => i.assignments.length === 0).length})
           </button>
         </div>
         <button
@@ -169,7 +170,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
           className="btn-primary"
           style={{ marginLeft: 'auto' }}
         >
-          {showAddForm ? 'Cancel' : '+ Add Item'}
+          {showAddForm ? 'Cancel' : '✚ Add Item'}
         </button>
       </div>
 
@@ -273,6 +274,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
               </div>
 
               <div className="item-participants">
+                <label className="item-participants-label">Who's sharing this item?</label>
                 <div className="participants-chips-container">
                   {participants.map(participant => {
                     const isAssigned = assignedIds.includes(participant.id);
@@ -294,13 +296,13 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
                   onClick={() => handleAssignAll(item.id)}
                   className="btn-link"
                 >
-                  Select All
+                  👥 Everyone
                 </button>
                 <button
                   onClick={() => handleClearAll(item.id)}
                   className="btn-link"
                 >
-                  Clear
+                  🚫 Clear All
                 </button>
               </div>
             </div>

@@ -3,8 +3,10 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import UsersList from './pages/UsersList';
 import SessionView from './pages/SessionView';
 import SettlementSummary from './pages/SettlementSummary';
+import ActivityReport from './pages/ActivityReport';
 import GoogleCallback from './pages/GoogleCallback'; 
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -20,6 +22,22 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/google/callback" element={<GoogleCallback />} />
+          <Route
+            path="/activity"
+            element={
+              <PrivateRoute>
+                <ActivityReport />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <PrivateRoute>
+                <UsersList />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/"
             element={

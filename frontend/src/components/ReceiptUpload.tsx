@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import api from '../lib/api';
 import './ReceiptUpload.css';
 
@@ -13,6 +13,9 @@ export default function ReceiptUpload({ sessionId, onUploadComplete }: Props) {
   const [manualItems, setManualItems] = useState('');
   const [manualTax, setManualTax] = useState('');
   const [error, setError] = useState('');
+  
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -25,9 +28,7 @@ export default function ReceiptUpload({ sessionId, onUploadComplete }: Props) {
     formData.append('receipt', file);
 
     try {
-      const response = await api.post(`/receipts/upload/${sessionId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await api.post(`/receipts/upload/${sessionId}`, formData);
       
       // Check if OCR successfully parsed items
       if (response.data.ocrSuccess && response.data.items.length > 0) {
@@ -92,32 +93,55 @@ Ground Beef 5lb 28.99`);
   return (
     <div className="receipt-upload">
       <div className="upload-card">
-        <h2>Upload Receipt</h2>
-        <p>Upload a photo of your Costco receipt or enter items manually</p>
+        <h2>Upload Your Receipt</h2>
+        <p>Take a photo or choose an existing image to automatically extract items</p>
 
         {error && <div className="error-message">{error}</div>}
 
         {!showManual ? (
           <div className="upload-section">
-            <label className="upload-button">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileUpload}
-                disabled={uploading}
-                style={{ display: 'none' }}
-              />
-              <span>{uploading ? 'Processing...' : '📷 Take Photo / Choose Image'}</span>
-            </label>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              disabled={uploading}
+              className="hidden"
+            />
+
+            <button
+              onClick={() => cameraInputRef.current?.click()}
+              className="upload-button"
+              disabled={uploading}
+            >
+              <span>{uploading ? 'Processing...' : '📷 Take Photo'}</span>
+            </button>
+
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="upload-button secondary"
+              disabled={uploading}
+            >
+              <span>{uploading ? 'Processing...' : '🖼️ Choose from Gallery'}</span>
+            </button>
 
             <div className="divider">or</div>
 
             <button
               onClick={() => setShowManual(true)}
-              className="btn-secondary"
+              className="btn-secondary w-full"
               disabled={uploading}
             >
-              ✏️ Enter Manually
+              ✏️ Enter Items Manually
             </button>
           </div>
         ) : (

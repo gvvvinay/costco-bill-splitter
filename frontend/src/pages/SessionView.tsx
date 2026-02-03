@@ -49,6 +49,27 @@ export default function SessionView() {
     await loadSession();
   };
 
+  const handleDownloadReceipt = async () => {
+    try {
+      const response = await api.get(`/receipts/download/${id}`, {
+        responseType: 'blob'
+      });
+      
+      // Create a blob URL and trigger download
+      const url = window.URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `receipt-${session?.name || 'receipt'}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download receipt:', error);
+      alert('Failed to download receipt');
+    }
+  };
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
@@ -62,7 +83,7 @@ export default function SessionView() {
       <header className="session-header">
         <div className="header-content">
           <button onClick={() => navigate('/')} className="back-button">
-            ← Back
+            ← Back to Trips
           </button>
           <h1>{session.name}</h1>
         </div>
@@ -71,15 +92,23 @@ export default function SessionView() {
       <main className="session-main">
         {session.receiptUrl && (
           <div className="receipt-preview">
-            <h3>Original Receipt</h3>
-            <a 
-              href={`/api/uploads/${session.receiptUrl}`} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="receipt-link"
-            >
-              📄 View Original Receipt Image
-            </a>
+            <h3>📄 Receipt Image</h3>
+            <div className="receipt-actions">
+              <a 
+                href={`/api/uploads/${session.receiptUrl}`} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="receipt-link"
+              >
+                View Original Receipt
+              </a>
+              <button 
+                onClick={handleDownloadReceipt}
+                className="receipt-download-button"
+              >
+                ⬇️ Download Receipt
+              </button>
+            </div>
           </div>
         )}
 
@@ -100,13 +129,13 @@ export default function SessionView() {
                 className={`tab ${activeTab === 'items' ? 'active' : ''}`}
                 onClick={() => setActiveTab('items')}
               >
-                Assign Items
+                🛒 Assign Items
               </button>
               <button
                 className={`tab ${activeTab === 'summary' ? 'active' : ''}`}
                 onClick={() => setActiveTab('summary')}
               >
-                Summary
+                💰 Who Owes What
               </button>
             </div>
 

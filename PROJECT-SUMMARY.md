@@ -2,7 +2,7 @@
 
 ## ✅ What's Been Created
 
-Your **Costco Bill Splitter** full-stack application is ready! Here's what's included:
+Your **SplitFair** full-stack application is ready! Here's what's included:
 
 ### Backend (Express + TypeScript + Prisma)
 - ✅ RESTful API with authentication
@@ -239,7 +239,7 @@ cd frontend && npm run preview # Preview frontend build
 
 ## 🙏 Thank You!
 
-Your full-stack Costco Bill Splitter is complete and running. The application includes:
+Your full-stack SplitFair application is complete and running. The application includes:
 
 - ✅ Authentication system
 - ✅ Receipt OCR parsing

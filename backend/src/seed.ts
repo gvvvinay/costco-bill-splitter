@@ -23,7 +23,7 @@ async function main() {
   // Create a sample session
   const session = await prisma.billSplitSession.create({
     data: {
-      name: 'Sample Costco Trip',
+      name: 'Sample Bill Split',
       userId: user.id,
       totalAmount: 156.78,
       taxAmount: 12.34

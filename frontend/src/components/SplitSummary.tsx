@@ -13,7 +13,7 @@ export default function SplitSummary({ calculation, sessionId, onSettled }: Prop
     return (
       <div className="split-summary">
         <div className="empty-message">
-          Assign items to participants to see the split calculation
+          👈 Assign items to people to see who owes what
         </div>
       </div>
     );
@@ -23,8 +23,12 @@ export default function SplitSummary({ calculation, sessionId, onSettled }: Prop
 
   return (
     <div className="split-summary">
+      <div className="split-summary-intro">
+        💡 <strong>Here's the breakdown:</strong> Each person's total includes their share of items plus their portion of tax.
+      </div>
+
       <div className="summary-overview">
-        <h3>Total Summary</h3>
+        <h3>Total Cost</h3>
         <div className="overview-grid">
           <div className="overview-item">
             <span className="label">Subtotal</span>
@@ -47,7 +51,7 @@ export default function SplitSummary({ calculation, sessionId, onSettled }: Prop
       </div>
 
       <div className="participants-breakdown">
-        <h3>Per Person Breakdown</h3>
+        <h3>💰 What Everyone Owes</h3>
         <div className="participants-grid">
           {participants.map(participant => (
             <div key={participant.participantId} className="participant-card">
@@ -58,11 +62,11 @@ export default function SplitSummary({ calculation, sessionId, onSettled }: Prop
 
               <div className="participant-details">
                 <div className="detail-row">
-                  <span>Subtotal</span>
+                  <span>Items Subtotal</span>
                   <span>${participant.subtotal.toFixed(2)}</span>
                 </div>
                 <div className="detail-row">
-                  <span>Tax</span>
+                  <span>Tax Share</span>
                   <span>${participant.taxAmount.toFixed(2)}</span>
                 </div>
               </div>

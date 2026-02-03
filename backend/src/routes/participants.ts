@@ -189,33 +189,100 @@ router.post('/settle', authMiddleware, async (req: AuthRequest, res) => {
       return res.status(400).json({ error: 'Participant name is required' });
     }
 
-    // Get all user sessions
+    // Get all user sessions with their data to calculate totals
     const sessions = await prisma.billSplitSession.findMany({
-      where: { userId: req.userId },
-      include: { settlements: true }
+      where: { 
+        userId: req.userId,
+        archived: false // Only settle active sessions
+      },
+      include: {
+        participants: true,
+        lineItems: {
+          include: {
+            assignments: true
+          }
+        },
+        settlements: true // Include existing settlements
+      }
     });
 
-    // Update all settlements for this participant
-    const updates = [];
+    let settledCount = 0;
+
+    // Process each session to find the participant and calculate owed amount
     for (const session of sessions) {
-      const settlement = session.settlements.find(s => s.participantName === participantName);
-      if (settlement && !settlement.settled) {
-        updates.push(
-          prisma.settlement.update({
-            where: { id: settlement.id },
-            data: {
-              amountPaid: settlement.amountOwed,
-              settled: true,
-              settledAt: new Date()
+      // Find participant by name in this session
+      const participant = session.participants.find(p => p.name === participantName);
+      
+      if (!participant) continue; // Participant not in this session
+
+      // Calculate what they owe (reuse logic from summary)
+      let subtotal = 0;
+      let taxableSubtotal = 0;
+      let totalPreTax = 0;
+      let totalTaxableAmount = 0;
+      
+      // Calculate totals for tax rate
+      session.lineItems.forEach(item => {
+        if (item.assignments.length > 0) {
+          totalPreTax += item.price;
+          if (item.taxable) totalTaxableAmount += item.price;
+        }
+      });
+      
+      const taxRate = totalTaxableAmount > 0 ? session.taxAmount / totalTaxableAmount : 0;
+
+      // Calculate participant share
+      session.lineItems.forEach(item => {
+        const assignmentCount = item.assignments.length;
+        if (assignmentCount > 0) {
+            const isAssigned = item.assignments.some(a => a.participantId === participant.id);
+            if (isAssigned) {
+                const share = item.price / assignmentCount;
+                subtotal += share;
+                if (item.taxable) {
+                    taxableSubtotal += share;
+                }
             }
-          })
-        );
+        }
+      });
+      
+      const taxShare = taxableSubtotal * taxRate;
+      const totalOwed = Math.round((subtotal + taxShare) * 100) / 100;
+
+      // Skip if they owe nothing and have no existing record
+      if (totalOwed <= 0 && (!session.settlements.find(s => s.participantId === participant.id))) {
+          continue; 
       }
+      
+      // Upsert settlement record
+      await prisma.settlement.upsert({
+        where: {
+          sessionId_participantId: {
+            sessionId: session.id,
+            participantId: participant.id
+          }
+        },
+        create: {
+          sessionId: session.id,
+          participantId: participant.id,
+          participantName: participant.name,
+          amountOwed: totalOwed,
+          amountPaid: totalOwed, // Mark as fully paid
+          settled: true,
+          settledAt: new Date()
+        },
+        update: {
+          amountOwed: totalOwed,
+          amountPaid: totalOwed,
+          settled: true,
+          settledAt: new Date()
+        }
+      });
+      
+      settledCount++;
     }
 
-    await Promise.all(updates);
-
-    res.json({ success: true, updated: updates.length });
+    res.json({ success: true, settledCount });
   } catch (error) {
     console.error('Settle participant error:', error);
     res.status(500).json({ error: 'Failed to settle participant' });
