@@ -19,12 +19,12 @@ export default function SettlementPanel({ calculation, sessionId, onSettled }: P
 
   const loadExistingSettlements = async () => {
     try {
-      const response = await api.get(`/sessions/${sessionId}`);
+      const sessionData = await api.getSession(Number(sessionId));
       const existingSettlements: Record<string, boolean> = {};
       
-      if (response.data.settlements && Array.isArray(response.data.settlements)) {
-        response.data.settlements.forEach((s: any) => {
-          existingSettlements[s.participantId] = s.settled;
+      if (sessionData && sessionData.settlements && Array.isArray(sessionData.settlements)) {
+        sessionData.settlements.forEach((s: any) => {
+          existingSettlements[s.fromParticipantId] = true;
         });
       }
       
@@ -49,13 +49,14 @@ export default function SettlementPanel({ calculation, sessionId, onSettled }: P
     setSaving(true);
     try {
       const settlementData = calculation.participants.map(p => ({
-        participantId: p.participantId,
-        participantName: p.name,
+        id: Date.now() + Math.random(),
+        fromParticipantId: Number(p.participantId),
+        toParticipantId: Number(p.participantId),
         amount: p.total,
-        settled: settlements[p.participantId] || false
+        sessionId: Number(sessionId)
       }));
 
-      await api.post(`/sessions/${sessionId}/settle`, { settlements: settlementData });
+      await api.saveSettlements(Number(sessionId), settlementData);
       onSettled();
     } catch (error) {
       console.error('Settlement save error:', error);

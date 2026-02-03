@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../lib/api';
 import './UsersList.css';
 
 interface User {
@@ -23,8 +22,8 @@ export default function UsersList() {
 
   const loadUsers = async () => {
     try {
-      const response = await api.get('/users');
-      setUsers(response.data);
+      // In local mode, show message
+      setUsers([]);
     } catch (error) {
       console.error('Failed to load users:', error);
     } finally {

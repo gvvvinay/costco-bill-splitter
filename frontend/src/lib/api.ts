@@ -1,16 +1,5 @@
-import axios from 'axios';
+// Local Storage API - No backend required
+import localStorageApi from './localStorageApi';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api'
-});
-
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-export default api;
+// Export the localStorage API as default
+export default localStorageApi;

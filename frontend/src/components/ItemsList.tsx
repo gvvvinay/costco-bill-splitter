@@ -31,15 +31,13 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
     const item = items.find(i => i.id === itemId);
     if (!item) return;
 
-    const currentAssignments = item.assignments.map(a => a.participantId);
+    const currentAssignments = item.assignments.map(a => Number(a.participantId));
     const newAssignments = isAssigned
-      ? currentAssignments.filter(id => id !== participantId)
-      : [...currentAssignments, participantId];
+      ? currentAssignments.filter(id => id !== Number(participantId))
+      : [...currentAssignments, Number(participantId)];
 
     try {
-      await api.post(`/sessions/${sessionId}/items/${itemId}/assign`, {
-        participantIds: newAssignments
-      });
+      await api.updateItem(Number(itemId), { participantIds: newAssignments });
       onItemUpdated();
     } catch (error) {
       console.error('Failed to update assignment:', error);
@@ -48,9 +46,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
 
   const handleAssignAll = async (itemId: string) => {
     try {
-      await api.post(`/sessions/${sessionId}/items/${itemId}/assign`, {
-        participantIds: participants.map(p => p.id)
-      });
+      await api.updateItem(Number(itemId), { participantIds: participants.map(p => Number(p.id)) });
       onItemUpdated();
     } catch (error) {
       console.error('Failed to assign all:', error);
@@ -59,9 +55,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
 
   const handleClearAll = async (itemId: string) => {
     try {
-      await api.post(`/sessions/${sessionId}/items/${itemId}/assign`, {
-        participantIds: []
-      });
+      await api.updateItem(Number(itemId), { participantIds: [] });
       onItemUpdated();
     } catch (error) {
       console.error('Failed to clear assignments:', error);
@@ -72,7 +66,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
     if (!confirm('Delete this item?')) return;
 
     try {
-      await api.delete(`/sessions/${sessionId}/items/${itemId}`);
+      await api.deleteItem(Number(itemId));
       onItemUpdated();
     } catch (error) {
       console.error('Failed to delete item:', error);
@@ -93,7 +87,7 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
     }
 
     try {
-      await api.put(`/sessions/${sessionId}/items/${itemId}`, {
+      await api.updateItem(Number(itemId), {
         name: editName.trim(),
         price: price
       });
@@ -121,10 +115,11 @@ export default function ItemsList({ items, participants, sessionId, onItemUpdate
     }
 
     try {
-      await api.post(`/sessions/${sessionId}/items`, {
+      await api.addItem(Number(sessionId), {
         name: newItemName.trim(),
         price: price,
-        quantity: quantity
+        quantity: quantity,
+        participantIds: []
       });
       setShowAddForm(false);
       setNewItemName('');

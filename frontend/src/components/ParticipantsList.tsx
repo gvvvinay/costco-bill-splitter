@@ -31,8 +31,8 @@ export default function ParticipantsList({ participants, sessionId, onParticipan
   const loadUsers = async () => {
     setLoadingUsers(true);
     try {
-      const response = await api.get('/users');
-      setUsers(response.data);
+      // In local mode, we don't have a users list - just allow custom names
+      setUsers([]);
     } catch (error) {
       console.error('Failed to load users:', error);
     } finally {
@@ -51,7 +51,7 @@ export default function ParticipantsList({ participants, sessionId, onParticipan
 
     setAdding(true);
     try {
-      await api.post(`/sessions/${sessionId}/participants`, { name: selectedUser });
+      await api.addParticipant(Number(sessionId), selectedUser);
       setSelectedUser('');
       setShowAdd(false);
       onParticipantAdded();

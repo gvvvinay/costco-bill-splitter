@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../lib/api';
 
 export default function GoogleCallback() {
   const [error, setError] = useState('');
@@ -27,17 +26,12 @@ export default function GoogleCallback() {
       }
 
       try {
-        const response = await api.post('/auth/google/callback', {
-          code,
-          redirectUri: `${window.location.origin}/auth/google/callback`
-        });
-
-        setToken(response.data.token);
-        setUser(response.data.user);
-        navigate('/');
+        // In local mode, Google OAuth is not available
+        setError('Google Sign-In requires a backend server. Please use regular login.');
+        setTimeout(() => navigate('/login'), 2000);
       } catch (err: any) {
         console.error('Google auth error:', err);
-        setError(err.response?.data?.error || 'Authentication failed');
+        setError('Authentication failed');
         setTimeout(() => navigate('/login'), 2000);
       }
     };

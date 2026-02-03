@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import api from '../lib/api';
 import './SettlementSummary.css';
 
 interface SessionDetail {
@@ -35,8 +34,8 @@ export default function SettlementSummary() {
 
   const loadSummary = async () => {
     try {
-      const response = await api.get('/participants/settlement-summary');
-      setSummaries(response.data);
+      // In local mode, show placeholder
+      setSummaries([]);
     } catch (error) {
       console.error('Failed to load settlement summary:', error);
     } finally {
@@ -50,7 +49,8 @@ export default function SettlementSummary() {
     }
 
     try {
-      await api.post('/participants/settle', { participantName });
+      // In local mode, show alert
+      alert('Settlement marking requires a backend server.');
       loadSummary();
     } catch (error) {
       console.error('Settlement error:', error);

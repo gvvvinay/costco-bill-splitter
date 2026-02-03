@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../lib/api';
-import { BillSplitSession, SplitCalculation } from '../types';
+import { BillSplitSession, SplitCalculation, ParticipantTotal } from '../types';
 import ReceiptUpload from '../components/ReceiptUpload';
 import ParticipantsList from '../components/ParticipantsList';
 import ItemsList from '../components/ItemsList';
@@ -22,19 +22,68 @@ export default function SessionView() {
 
   const loadSession = async () => {
     try {
-      const response = await api.get(`/sessions/${id}`);
-      setSession(response.data);
+      const sessionData = await api.getSession(Number(id));
+      if (!sessionData) {
+        setLoading(false);
+        return;
+      }
+      setSession(sessionData as any);
       
-      // Load calculation if there are items and participants
-      if (response.data.lineItems.length > 0 && response.data.participants.length > 0) {
-        const calcResponse = await api.get(`/sessions/${id}/calculate`);
-        setCalculation(calcResponse.data);
+      // Calculate splits locally if there are items and participants
+      if (sessionData.items && sessionData.items.length > 0 && sessionData.participants && sessionData.participants.length > 0) {
+        const calc = calculateSplits(sessionData);
+        setCalculation(calc);
       }
     } catch (error) {
       console.error('Failed to load session:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const calculateSplits = (sessionData: any): SplitCalculation => {
+    const participants = sessionData.participants || [];
+    const items = sessionData.items || [];
+    
+    const participantTotals: Record<number, number> = {};
+    
+    participants.forEach((p: any) => {
+      participantTotals[p.id] = 0;
+    });
+    
+    items.forEach((item: any) => {
+      const shareCount = item.participantIds?.length || 1;
+      const shareAmount = item.price / shareCount;
+      item.participantIds?.forEach((pid: number) => {
+        participantTotals[pid] = (participantTotals[pid] || 0) + shareAmount;
+      });
+    });
+    
+    const total = items.reduce((sum: number, i: any) => sum + i.price, 0);
+    
+    const participantsList: ParticipantTotal[] = participants.map((p: any) => ({
+      participantId: String(p.id),
+      name: p.name,
+      subtotal: participantTotals[p.id] || 0,
+      taxAmount: 0,
+      total: participantTotals[p.id] || 0,
+      items: items.filter((i: any) => i.participantIds?.includes(p.id)).map((i: any) => ({
+        name: i.name,
+        price: i.price,
+        splitCount: i.participantIds?.length || 1,
+        share: i.price / (i.participantIds?.length || 1)
+      }))
+    }));
+    
+    return {
+      participants: participantsList,
+      summary: {
+        subtotal: total,
+        tax: 0,
+        total: total,
+        roundingError: 0
+      }
+    };
   };
 
   const handleReceiptUploaded = async () => {
@@ -51,19 +100,7 @@ export default function SessionView() {
 
   const handleDownloadReceipt = async () => {
     try {
-      const response = await api.get(`/receipts/download/${id}`, {
-        responseType: 'blob'
-      });
-      
-      // Create a blob URL and trigger download
-      const url = window.URL.createObjectURL(response.data);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `receipt-${session?.name || 'receipt'}.jpg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      alert('Receipt download is not available in demo mode');
     } catch (error) {
       console.error('Failed to download receipt:', error);
       alert('Failed to download receipt');

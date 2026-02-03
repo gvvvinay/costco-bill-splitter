@@ -23,8 +23,36 @@ export default function Dashboard() {
 
   const loadSessions = async () => {
     try {
-      const response = await api.get('/sessions');
-      setSessions(response.data);
+      const data = await api.getSessions();
+      // Convert to BillSplitSession format
+      const converted = data.map((s: any) => ({
+        ...s,
+        id: String(s.id),
+        userId: String(s.userId),
+        totalAmount: (s.items || []).reduce((sum: number, i: any) => sum + i.price, 0),
+        taxAmount: 0,
+        archived: false,
+        lineItems: (s.items || []).map((item: any) => ({
+          ...item,
+          id: String(item.id),
+          sessionId: String(s.id),
+          taxable: false,
+          orderIndex: 0,
+          assignments: (item.participantIds || []).map((pid: number) => ({
+            id: String(Date.now() + Math.random()),
+            lineItemId: String(item.id),
+            participantId: String(pid),
+            participant: s.participants?.find((p: any) => p.id === pid)
+          }))
+        })),
+        participants: (s.participants || []).map((p: any) => ({
+          ...p,
+          id: String(p.id),
+          sessionId: String(s.id)
+        })),
+        updatedAt: s.createdAt
+      }));
+      setSessions(converted);
     } catch (error) {
       console.error('Failed to load sessions:', error);
     } finally {
@@ -37,8 +65,8 @@ export default function Dashboard() {
     if (!newSessionName.trim()) return;
 
     try {
-      const response = await api.post('/sessions', { name: newSessionName });
-      navigate(`/session/${response.data.id}`);
+      const newSession = await api.createSession(newSessionName);
+      navigate(`/session/${newSession.id}`);
     } catch (error) {
       console.error('Failed to create session:', error);
     }
@@ -52,11 +80,11 @@ export default function Dashboard() {
     });
   };
 
-  const handleArchive = async (sessionId: string, archived: boolean, e: React.MouseEvent) => {
+  const handleArchive = async (_sessionId: string, _archived: boolean, e: React.MouseEvent) => {
     e.stopPropagation();
     
     try {
-      await api.patch(`/sessions/${sessionId}/archive`, { archived });
+      // In local mode, just reload sessions (archive feature can be added to localStorageApi if needed)
       loadSessions();
     } catch (error) {
       console.error('Archive error:', error);
@@ -66,15 +94,12 @@ export default function Dashboard() {
 
   const handleExport = async () => {
     try {
-      const params = new URLSearchParams();
-      if (startDate) params.append('startDate', startDate);
-      if (endDate) params.append('endDate', endDate);
+      // In local mode, create CSV from sessions data
+      const allSessions = await api.getSessions();
+      const csvContent = generateCSV(allSessions, startDate, endDate);
       
-      const response = await api.get(`/sessions/export/csv?${params.toString()}`, {
-        responseType: 'blob'
-      });
-      
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `costco-splits-${Date.now()}.csv`);
@@ -86,6 +111,21 @@ export default function Dashboard() {
       console.error('Export error:', error);
       alert('Failed to export data');
     }
+  };
+
+  const generateCSV = (sessions: any[], startDate: string, endDate: string) => {
+    let filtered = sessions;
+    if (startDate) filtered = filtered.filter(s => new Date(s.createdAt) >= new Date(startDate));
+    if (endDate) filtered = filtered.filter(s => new Date(s.createdAt) <= new Date(endDate));
+    
+    const headers = 'Session,Date,Item,Price,Participants\n';
+    const rows = filtered.flatMap(session => 
+      (session.items || []).map((item: any) => 
+        `"${session.name}","${session.createdAt}","${item.name}",${item.price},"${item.participantIds?.length || 0}"`
+      )
+    ).join('\n');
+    
+    return headers + rows;
   };
 
   const getSessionTotal = (session: BillSplitSession) => {

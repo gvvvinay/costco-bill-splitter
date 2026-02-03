@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../lib/api';
 import './ActivityReport.css';
 
 interface Activity {
@@ -26,8 +25,8 @@ export default function ActivityReport() {
 
   const loadActivity = async () => {
     try {
-      const response = await api.get('/reports/activity');
-      setActivities(response.data);
+      // In local mode, show placeholder
+      setActivities([]);
     } catch (error) {
       console.error('Failed to load activity report:', error);
     } finally {

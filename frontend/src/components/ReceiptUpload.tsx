@@ -24,23 +24,12 @@ export default function ReceiptUpload({ sessionId, onUploadComplete }: Props) {
     setUploading(true);
     setError('');
 
-    const formData = new FormData();
-    formData.append('receipt', file);
-
     try {
-      const response = await api.post(`/receipts/upload/${sessionId}`, formData);
-      
-      // Check if OCR successfully parsed items
-      if (response.data.ocrSuccess && response.data.items.length > 0) {
-        // OCR worked! Proceed normally
-        onUploadComplete();
-      } else {
-        // OCR failed, show manual entry
-        setShowManual(true);
-        setError('OCR could not extract items from the receipt. Please enter items manually below or click "Load Sample" for test data.');
-      }
+      // In local mode, OCR is not available
+      setShowManual(true);
+      setError('Receipt processing requires a backend server. Please enter items manually or use the "Add Item" button.');
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to upload receipt');
+      setError('Failed to process receipt');
     } finally {
       setUploading(false);
     }
@@ -57,22 +46,24 @@ export default function ReceiptUpload({ sessionId, onUploadComplete }: Props) {
         const parts = line.trim().split(/\s+/);
         const price = parseFloat(parts[parts.length - 1]);
         const name = parts.slice(0, -1).join(' ');
-        return { name, price, quantity: 1, taxable: true };
+        return { name, price, quantity: 1 };
       }).filter(item => item.name && !isNaN(item.price));
 
-      const tax = parseFloat(manualTax) || 0;
-      const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+      // Add items to session
+      for (const item of items) {
+        await api.addItem(Number(sessionId), {
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          participantIds: []
+        });
+      }
 
-      await api.post(`/receipts/manual/${sessionId}`, {
-        items,
-        tax,
-        subtotal,
-        total: subtotal + tax
-      });
-
+      setShowManual(false);
+      setManualItems('');
       onUploadComplete();
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to process receipt');
+      setError('Failed to process receipt');
     } finally {
       setUploading(false);
     }
